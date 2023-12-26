@@ -3,6 +3,7 @@
 from logging import basicConfig, DEBUG, WARNING, getLogger
 from argparse import ArgumentParser #library to easily parse command line arguments
 from re import search, DOTALL
+from definitions import DOS_HEADER_MAP
 
 logger = getLogger(__name__)
 
@@ -17,9 +18,9 @@ class Parser:
 
     def __init__(self, file_path):
         self.file_path = file_path;
-        self.data = self.getFileData()
+        self.data = self.get_file_data()
 
-    def getFileData(self):
+    def get_file_data(self):
         logger.debug(f'Reading contents of {self.file_path}')
         try:
             with open(self.file_path, 'rb') as fp:
@@ -28,12 +29,29 @@ class Parser:
             raise self.ParserException(f'Error reading file {self.file_path}') from e
         logger.debug(f'Success')
         return data
-    
-    def getHeaders(self):
-        return 'called get headers';
 
-    def getSections(self):
-        return 'called get sections';
+    def get_dos_header(self):
+        logger.debug('Reading DOS_HEADER from PE ...')
+        start_from = 0x0
+        dos_headers_map = DOS_HEADER_MAP.copy()
+        try: 
+            for table in dos_headers_map:
+                print(f'{table} -> HEX: {hex(self.bytes_to_int(self.data[start_from: start_from + dos_headers_map[table]['length']]))} -> DEC: {self.bytes_to_int(self.data[start_from: start_from + dos_headers_map[table]['length']])} -> {dos_headers_map[table]['desc']}' )
+                start_from += dos_headers_map[table]['length'] 
+        except Exception as e:
+            raise self.ParserException('as') from e 
+        logger.debug('RETURN')
+
+    def get_sections(self):
+        return 'called get sections'
+    
+    def bytes_to_int(self, bytes, order='little'):
+        try:
+            result = int.from_bytes(bytes, order)
+        except Exception as e:
+            raise self.ParserException(f'Error parsing integer from value: {bytes}') from e
+        return result
+
 
 if __name__ == '__main__': #if is running as a script or if is imported as a module
     ap = ArgumentParser()
@@ -52,9 +70,9 @@ if __name__ == '__main__': #if is running as a script or if is imported as a mod
     for fp in args.file_paths:
         try:
             if args.headers:
-                print(Parser(fp).getHeaders())
+                Parser(fp).get_dos_header()
             if args.sections:
-                print(Parser(fp).getSections())
+                print(Parser(fp).get_sections())
         except:
             logger.exception(f'Exception occurred for {fp}', exec_info = True)
             continue
