@@ -89,4 +89,90 @@ DOS_HEADER_MAP = {
         'length': 0x2,
         'desc': 'Reserved words'
     },
+    'E_OEMID': {
+        'offset': 0x26,
+        'length': 0x2,
+        'desc': 'OEM identifier'
+    },
+    'E_OEMINFO': {
+        'offset': 0x28,
+        'length': 0x2,
+        'desc': 'OEM information'
+    },
+    'E_RES2[0]': {
+        'offset': 0x2A,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[1]': {
+        'offset': 0x2C,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[3]': {
+        'offset': 0x2E,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[4]': {
+        'offset': 0x30,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[5]': {
+        'offset': 0x32,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[6]': {
+        'offset': 0x34,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[7]': {
+        'offset': 0x36,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[8]': {
+        'offset': 0x38,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_RES2[9]': {
+        'offset': 0x3A,
+        'length': 0x2,
+        'desc': 'Reserved words'
+    },
+    'E_LFANEW': {
+        'offset': 0x3C,
+        'length': 0x4,
+        'desc': 'File address of new exe header'
+    }
+}
+
+FILE_HEADER = {
+    'MACHINE': {
+        'length':0x2,
+        'desc': 'PE target architecture'
+    },
+    'NUMBER_OF_SECTIONS': {
+        'length':0x2,
+        'desc': 'Number of sections'
+    },
+    'TIME_DATE_STAMP': {
+        'length':0x4
+    },
+    'POINTER_TO_SYMBOL_TABLE': {
+        'length':0x4
+    },
+    'NUMBER_OF_SYMBOLS': {
+        'length':0x4
+    },
+    'SIZE_OF_OPTIONAL_HEADER': {
+        'length':0x2
+    },
+    'CHARACTERISTICS': { 
+        'length':0x2
+    }
 }

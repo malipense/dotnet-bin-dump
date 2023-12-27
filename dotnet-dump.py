@@ -3,7 +3,9 @@
 from logging import basicConfig, DEBUG, WARNING, getLogger
 from argparse import ArgumentParser #library to easily parse command line arguments
 from re import search, DOTALL
-from definitions import DOS_HEADER_MAP
+from definitions import DOS_HEADER_MAP, FILE_HEADER
+from file_header import FileHeader
+from util import bytes_to_int
 
 logger = getLogger(__name__)
 
@@ -12,9 +14,6 @@ class Parser:
         pass
 
     PATTERN_HEADER_START = b'(\x72.{9}){9}'
-    PATTERN_SECTION_TABLE = b'(\x72.{9}){9}'
-    PATTERN_SECTION_STRING = b'(\x72.{9}){9}'
-    PATTERN_SECTION_SYMBOLS = b'(\x72.{9}){9}'
 
     def __init__(self, file_path):
         self.file_path = file_path;
@@ -32,26 +31,26 @@ class Parser:
 
     def get_dos_header(self):
         logger.debug('Reading DOS_HEADER from PE ...')
-        start_from = 0x0
+        start_offset = 0x0
         dos_headers_map = DOS_HEADER_MAP.copy()
         try: 
+            print('***********************DOS_HEADER***********************')
             for table in dos_headers_map:
-                print(f'{table} -> HEX: {hex(self.bytes_to_int(self.data[start_from: start_from + dos_headers_map[table]['length']]))} -> DEC: {self.bytes_to_int(self.data[start_from: start_from + dos_headers_map[table]['length']])} -> {dos_headers_map[table]['desc']}' )
-                start_from += dos_headers_map[table]['length'] 
+                print(f'{table} --- HEX: {hex(bytes_to_int(self, self.data[start_offset: start_offset + dos_headers_map[table]['length']]))} --- DEC: {bytes_to_int(self, self.data[start_offset: start_offset + dos_headers_map[table]['length']])} --- {dos_headers_map[table]['desc']}' )
+                start_offset += dos_headers_map[table]['length'] 
         except Exception as e:
             raise self.ParserException('as') from e 
         logger.debug('RETURN')
 
+    def get_file_header(self):
+        file_header_map = FILE_HEADER.copy()
+        file_header = FileHeader(self.data, file_header_map)
+        print('\n\n')
+        print('***********************FILE_HEADER***********************')
+        print(f'MACHINE: {file_header._machine}\nNUMBER OF SECTIONS: {file_header._number_of_sections}\nTIMESTAMP: {file_header._timestamp}\nCHARACTERISTICS: {file_header._characteristics}')
+
     def get_sections(self):
         return 'called get sections'
-    
-    def bytes_to_int(self, bytes, order='little'):
-        try:
-            result = int.from_bytes(bytes, order)
-        except Exception as e:
-            raise self.ParserException(f'Error parsing integer from value: {bytes}') from e
-        return result
-
 
 if __name__ == '__main__': #if is running as a script or if is imported as a module
     ap = ArgumentParser()
@@ -71,6 +70,7 @@ if __name__ == '__main__': #if is running as a script or if is imported as a mod
         try:
             if args.headers:
                 Parser(fp).get_dos_header()
+                Parser(fp).get_file_header()
             if args.sections:
                 print(Parser(fp).get_sections())
         except:
